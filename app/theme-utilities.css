@@ -1,0 +1,89 @@
+/* Utility classes for pastel yellow 3D card theme */
+.card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+.btn {
+  background: #FDD365;
+  color: #2B2C34;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border: none;
+  padding: 0.75em 2em;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', 'Quicksand', 'Nunito', sans-serif;
+  cursor: pointer;
+}
+.btn:hover {
+  background: #FBC647;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  font-size: 0.85em;
+  padding: 0.3em 1em;
+  font-weight: 600;
+  background: #FFB6B9;
+  color: #2B2C34;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-right: 0.5em;
+}
+.badge-success {
+  background: #A0E7A0;
+  color: #2B2C34;
+}
+.badge-danger {
+  background: #FF6B6B;
+  color: #fff;
+}
+.emoji-badge {
+  background: #FDD365;
+  border-radius: 999px;
+  padding: 0.25em 0.8em;
+  font-size: 1em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.rounded-xl {
+  border-radius: 24px !important;
+}
+.rounded-lg {
+  border-radius: 16px !important;
+}
+.shadow-hover:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+}
+.sidebar {
+  background: #FFF4D3;
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.sidebar .active {
+  background: #FFFFFF;
+  color: #2B2C34;
+  border-left: 4px solid #FDD365;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.sidebar .inactive {
+  background: #FFF4D3;
+  color: #6B6B6B;
+  border-radius: 8px;
+}
+.sidebar .icon {
+  color: #2B2C34;
+  border: 1.5px solid #2B2C34;
+  border-radius: 50%;
+  padding: 0.25em;
+}

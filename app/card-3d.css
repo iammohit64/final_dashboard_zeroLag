@@ -1,0 +1,60 @@
+.card-3d {
+  background: var(--retro-bg-cream);
+  color: var(--text-main);
+  border: 3px solid var(--retro-border-dark);
+  border-radius: 18px;
+  box-shadow:
+    0 4px 0 0 var(--retro-border-dark),
+    0 8px 24px 0 rgba(43,44,52,0.10);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card-header-retro {
+  background: var(--retro-header-orange);
+  color: var(--retro-border-dark);
+  font-weight: bold;
+  border-bottom: 3px solid var(--retro-border-dark);
+}
+
+.card-3d * {
+  color: var(--text-main) !important;
+}
+
+.card-3d:hover {
+  box-shadow:
+    0 8px 0 0 var(--retro-border-dark),
+    0 16px 48px 0 rgba(43,44,52,0.15);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Add these rules to your existing CSS file */
+
+.card-header-retro[data-color="blue"] {
+  background: var(--retro-header-blue);
+}
+.card-header-retro[data-color="green"] {
+  background: var(--retro-header-green);
+}
+.card-header-retro[data-color="pink"] {
+  background: var(--retro-header-pink);
+}
+.card-header-retro[data-color="yellow"] {
+  background: var(--retro-header-yellow);
+}
+.card-header-retro[data-color="light-plum"] {
+  background: var(--retro-header-light-plum);
+}
+.card-header-retro[data-color="gray"] {
+  background: var(--retro-gray-400);
+}
+
+/* Ensure you have these color variables defined at the top of your CSS */
+:root {
+  --retro-header-blue: #3498db;
+  --retro-header-green: #2ecc71;
+  --retro-header-pink: #e91e63;
+  --retro-header-yellow: #f1c40f;
+  --retro-header-light-plum: #9b59b6;
+  --retro-gray-400: #bdc3c7;
+  --warm-red: #e74c3c;
+}

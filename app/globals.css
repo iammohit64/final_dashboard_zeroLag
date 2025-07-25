@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === PRODUCT MAIN PALETTE (Yellow/Orange/Coral) === */
+    --background: #FFF58F; /* main-yellow */
+    --card: #FFF3B0;      /* lighter yellow for cards */
+    --primary: #FFA40B;   /* main-orange */
+    --accent: #F86F6F;    /* main-coral */
+    --text-main: #2B2C34; /* deep navy/dark gray for contrast */
+    --card-bg: #FFF3B0;   /* card background */
+    --border-main: #F86F6F; /* main-coral for borders */
+    --foreground: #2B2C34;
+    /* === RETRO PASTEL PALETTE === */
+    --retro-header-orange: #FFA40B;
+    --retro-header-blue: #5CC8FF;
+    --retro-header-green: #7BE495;
+    --retro-header-pink: #FFB5C2;
+    --retro-header-yellow: #FFF58F;
+    --retro-border-dark: #2B2C34;
+    --retro-bg-cream: #FFF3B0;
+    --retro-bg-pink: #FFE4E1;
+    --retro-bg-blue: #E0F7FA;
+    --retro-bg-green: #E6F9E5;
+    --card-foreground: #2B2C34;
+    --popover: #FFFFFF;
+    --popover-foreground: #2B2C34;
+    --secondary: #F8F8FB;
+    --secondary-foreground: #4A4A4A;
+    --muted: #F8F8FB;
+    --muted-foreground: #4A4A4A;
+    
+    /* === ACCENT PALETTE (Pinks/Peaches, for borders/headers) === */
+    --border: #FDDADA; /* accent-pink */
+    --header-bg: #FDEEEA; /* accent-pink-light */
+    --header-accent: #FFEBD3; /* accent-peach-light */
+    --accent-secondary: #FFD8BC; /* accent-peach */
+    --accent-foreground: #2B2C34;
+    --destructive: #FF6B6B;
+    --destructive-foreground: #FFF6E9;
+    --input: #FFFFFF;
+    --ring: #FFA40B;
+    --radius: 16px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    --font-headline: 'Outfit', sans-serif;
+    --font-body: 'Nunito', 'Inter', sans-serif;
+    --font-ui: 'Space Grotesk', sans-serif;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border-color);
+  }
+  body {
+    background: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    background-image: none;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headline);
+    font-weight: 700;
+  }
+}
+
+/* Custom scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Re-enable animations and transitions */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Ensure hover effects and transitions are not globally disabled */
+.group:hover .group-hover\\:opacity-100 {
+  opacity: 1;
+}
+
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-shadow {
+  transition-property: box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
