@@ -11,6 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { parseEther, decodeEventLog } from "viem";
+import { taskStakingAbi } from "@/lib/abi"; // You'll need to create this file
 
 // Retro Components
 import { RetroButton } from "@/components/retro-button"
@@ -163,15 +166,21 @@ export default function ZeroLagDashboard() {
   const { disconnect } = useDisconnect();
   const [activeTab, setActiveTab] = useState("overview")
 
+    // --- ADD THIS SECTION ---
+  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const { data: hash, writeContract, isPending, error } = useWriteContract();
+  const { data: receipt, isLoading: isConfirming } = useWaitForTransactionReceipt({ hash });
+  // --- END OF ADDED SECTION ---
+
   // Helper to format the address
   const formattedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
-// Function your button will call
+  // Function your button will call
   const handleConnectWallet = () => {
     connect({ connector: injected() });
   };
   const handleDisconnectWallet = () => {
    disconnect();
- };
+  };
 
   //const [isWalletConnected, setIsWalletConnected] = useState(false)
   //const [userAddress, setUserAddress] = useState("")
@@ -189,6 +198,8 @@ export default function ZeroLagDashboard() {
   const [language, setLanguage] = useState("en")
   const [zkProofMode, setZkProofMode] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [isClient, setIsClient] = useState(false); // <-- ADD THIS LINE
+
 
   // Wallet Connection Functions
   
@@ -198,6 +209,9 @@ export default function ZeroLagDashboard() {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
+  useEffect(() => {
+  setIsClient(true)
+}, [])
 
   // Mock Data
   const [userStats, setUserStats] = useState<UserStats>({
@@ -217,103 +231,103 @@ export default function ZeroLagDashboard() {
   })
 
   const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Complete React Tutorial Series",
-      description: "Finish all 12 modules of the advanced React course with hands-on projects",
-      category: "Learning",
-      deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      stakeAmount: 50,
-      stakeCurrency: "ZLAG",
-      status: "active",
-      progress: 75,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      difficulty: "medium",
-      tags: ["React", "JavaScript", "Frontend"],
-      userType: "student",
-      validatorScore: 0.92,
-    },
-    {
-      id: "2",
-      title: "Client Website Delivery",
-      description: "Complete responsive website for client with mobile optimization",
-      category: "Freelance",
-      deadline: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-      stakeAmount: 150,
-      stakeCurrency: "ETH",
-      status: "pending",
-      progress: 100,
-      proofSubmitted: true,
-      proofType: "url",
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      difficulty: "hard",
-      tags: ["Web Development", "Client Work", "Responsive"],
-      userType: "freelancer",
-      validatorScore: 0.88,
-    },
-    {
-      id: "3",
-      title: "Daily Reading Goal",
-      description: "Read 30 pages of technical documentation and take notes",
-      category: "Productivity",
-      deadline: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      stakeAmount: 15,
-      stakeCurrency: "USDC",
-      status: "completed",
-      progress: 100,
-      completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      reward: 18,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      difficulty: "easy",
-      tags: ["Reading", "Documentation", "Learning"],
-      userType: "productivity",
-      validatorScore: 0.95,
-    },
-    {
-      id: "4",
-      title: "Assignment Submission",
-      description: "Submit final project for Computer Science course with documentation",
-      category: "Academic",
-      deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      stakeAmount: 75,
-      stakeCurrency: "ZLAG",
-      status: "active",
-      progress: 60,
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      difficulty: "hard",
-      tags: ["Assignment", "Computer Science", "Project"],
-      userType: "student",
-    },
-    {
-      id: "5",
-      title: "Morning Routine Consistency",
-      description: "Complete morning routine including exercise and planning",
-      category: "Productivity",
-      deadline: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      stakeAmount: 10,
-      stakeCurrency: "ZLAG",
-      status: "failed",
-      progress: 0,
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      difficulty: "easy",
-      tags: ["Routine", "Consistency", "Habits"],
-      userType: "productivity",
-    },
-    {
-      id: "6",
-      title: "Logo Design Delivery",
-      description: "Create and deliver logo design package for startup client",
-      category: "Freelance",
-      deadline: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-      stakeAmount: 100,
-      stakeCurrency: "ZLAG",
-      status: "active",
-      progress: 30,
-      createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
-      difficulty: "medium",
-      tags: ["Design", "Logo", "Branding"],
-      userType: "freelancer",
-    },
+    // {
+    //   id: "1",
+    //   title: "Complete React Tutorial Series",
+    //   description: "Finish all 12 modules of the advanced React course with hands-on projects",
+    //   category: "Learning",
+    //   deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    //   stakeAmount: 50,
+    //   stakeCurrency: "ZLAG",
+    //   status: "active",
+    //   progress: 75,
+    //   createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    //   difficulty: "medium",
+    //   tags: ["React", "JavaScript", "Frontend"],
+    //   userType: "student",
+    //   validatorScore: 0.92,
+    // },
+    // {
+    //   id: "2",
+    //   title: "Client Website Delivery",
+    //   description: "Complete responsive website for client with mobile optimization",
+    //   category: "Freelance",
+    //   deadline: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    //   stakeAmount: 150,
+    //   stakeCurrency: "ETH",
+    //   status: "pending",
+    //   progress: 100,
+    //   proofSubmitted: true,
+    //   proofType: "url",
+    //   createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    //   difficulty: "hard",
+    //   tags: ["Web Development", "Client Work", "Responsive"],
+    //   userType: "freelancer",
+    //   validatorScore: 0.88,
+    // },
+    // {
+    //   id: "3",
+    //   title: "Daily Reading Goal",
+    //   description: "Read 30 pages of technical documentation and take notes",
+    //   category: "Productivity",
+    //   deadline: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    //   stakeAmount: 15,
+    //   stakeCurrency: "USDC",
+    //   status: "completed",
+    //   progress: 100,
+    //   completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    //   reward: 18,
+    //   createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    //   difficulty: "easy",
+    //   tags: ["Reading", "Documentation", "Learning"],
+    //   userType: "productivity",
+    //   validatorScore: 0.95,
+    // },
+    // {
+    //   id: "4",
+    //   title: "Assignment Submission",
+    //   description: "Submit final project for Computer Science course with documentation",
+    //   category: "Academic",
+    //   deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    //   stakeAmount: 75,
+    //   stakeCurrency: "ZLAG",
+    //   status: "active",
+    //   progress: 60,
+    //   createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    //   difficulty: "hard",
+    //   tags: ["Assignment", "Computer Science", "Project"],
+    //   userType: "student",
+    // },
+    // {
+    //   id: "5",
+    //   title: "Morning Routine Consistency",
+    //   description: "Complete morning routine including exercise and planning",
+    //   category: "Productivity",
+    //   deadline: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    //   stakeAmount: 10,
+    //   stakeCurrency: "ZLAG",
+    //   status: "failed",
+    //   progress: 0,
+    //   createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    //   difficulty: "easy",
+    //   tags: ["Routine", "Consistency", "Habits"],
+    //   userType: "productivity",
+    // },
+    // {
+    //   id: "6",
+    //   title: "Logo Design Delivery",
+    //   description: "Create and deliver logo design package for startup client",
+    //   category: "Freelance",
+    //   deadline: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+    //   stakeAmount: 100,
+    //   stakeCurrency: "ZLAG",
+    //   status: "active",
+    //   progress: 30,
+    //   createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+    //   difficulty: "medium",
+    //   tags: ["Design", "Logo", "Branding"],
+    //   userType: "freelancer",
+    // },
   ])
 
   const [nftBadges, setNftBadges] = useState<NFTBadge[]>([
@@ -562,69 +576,191 @@ export default function ZeroLagDashboard() {
   }
 
   // Utility Functions
-  const createTask = () => {
-    if (!newTask.title || !newTask.deadline || !newTask.stakeAmount) return
-    // ✅ This now uses the REAL connection status
-    if (!isConnected) {
-      alert("Please connect your wallet first!")
-      return
+  // const createTask = () => {
+  //   if (!newTask.title || !newTask.deadline || !newTask.stakeAmount) return
+  //   // ✅ This now uses the REAL connection status
+  //   if (!isConnected) {
+  //     alert("Please connect your wallet first!")
+  //     return
+  //   }
+
+  //   const stakeAmount = Number.parseFloat(newTask.stakeAmount)
+  //   const currency = newTask.stakeCurrency
+
+  //   // Check if user has sufficient balance
+  //   if (userBalance[currency] < stakeAmount) {
+  //     alert(`Insufficient ${currency} balance. You have ${userBalance[currency]} ${currency}`)
+  //     return
+  //   }
+
+  //   // Simulate smart contract locking stake
+  //   console.log(`Smart contract locking ${stakeAmount} ${currency} for task: ${newTask.title}`)
+    
+  //   // Deduct stake from user balance
+  //   setUserBalance(prev => ({
+  //     ...prev,
+  //     [currency]: prev[currency] - stakeAmount
+  //   }))
+
+   //   const task: Task = {
+   //     id: Date.now().toString(),
+      //     title: newTask.title,
+      //     description: newTask.description,
+     //     category: newTask.category || "productivity",
+     //     deadline: new Date(newTask.deadline),
+      //     stakeAmount: stakeAmount,
+      //     stakeCurrency: newTask.stakeCurrency,
+      //     status: "active",
+      //     progress: 0,
+      //     createdAt: new Date(),
+     //     difficulty: newTask.difficulty,
+     //     tags: newTask.tags
+      //       .split(",")
+     //       .map((tag) => tag.trim())
+      //       .filter(Boolean),
+      //     userType: newTask.userType as "student" | "freelancer" | "productivity",
+     //   }
+
+       //   setTasks((prev) => [task, ...prev])
+     //   setUserStats(prev => ({ ...prev, tasksActive: prev.tasksActive + 1 }))
+    
+     //   setNewTask({
+     //     title: "",
+     //     description: "",
+     //     category: "",
+     //     deadline: "",
+     //     stakeAmount: "",
+     //     stakeCurrency: "ZLAG" as "ETH" | "USDC" | "ZLAG",
+     //     difficulty: "medium" as "easy" | "medium" | "hard",
+     //     tags: "",
+     //     userType: userStats.userType,
+     //   })
+     //   setShowCreateTaskModal(false)
+
+     //   console.log(`Task created successfully. Stake of ${stakeAmount} ${currency} locked.`)
+     // }
+
+
+
+     //---------------NEW ADDED CREATE TASK AFTER REMOVING ABOVE ONE----------------------------------//
+     // DELETE your old createTask function and REPLACE it with this one:
+      const createTask = () => {
+      // 1. Basic validation from your form state
+      if (!newTask.title || !newTask.deadline || !newTask.stakeAmount) {
+      alert("Please fill out the title, deadline, and stake amount.");
+      return;
+     }
+     if (!isConnected) {
+      alert("Please connect your wallet first!");
+      return;
+     }
+
+     // 2. Prepare the data for the smart contract
+     // Your contract only needs the deadline and the staked ETH value.
+     const deadlineTimestamp = Math.floor(new Date(newTask.deadline).getTime() / 1000);
+     const stakeInEther = newTask.stakeAmount;
+
+     // --- FINAL DEBUGGING LOGS - Adding Console.log ---
+    console.log("--- Preparing Transaction ---");
+    console.log("Deadline String from input:", newTask.deadline);
+    console.log("Calculated Timestamp (seconds):", deadlineTimestamp);
+    console.log("Stake String from input:", stakeInEther);
+    console.log("-----------------------------");
+    // ----------------------------
+    
+     // Ensure deadline is in the future
+     if (deadlineTimestamp <= Math.floor(Date.now() / 1000)) {
+        alert("Deadline must be in the future.");
+        return;
+     }
+
+    // 3. Call the smart contract
+    console.log("🚀 Calling smart contract... Please check MetaMask.");
+    writeContract({
+      address: contractAddress,
+      abi: taskStakingAbi,
+      functionName: "createTask",
+      args: [BigInt(deadlineTimestamp)],
+      value: parseEther(stakeInEther), // Convert "0.1" ETH to the correct format
+    });
+  };
+  //---------------NEW ADDED CREATE TASK ENDS HERE AFTER REMOVING ABOVE ONE----------------------------------//
+  //-------------------------------------USE EFFECT TO LISTEN----------------------------------------//
+  // ADD THIS useEffect hook to listen for the transaction result
+  useEffect(() => {
+    // This runs only when the transaction is confirmed
+     if (receipt) {
+      console.log("--- TRANSACTION RECEIPT RECEIVED ---");
+      console.log(receipt); // This will print the entire receipt object.
+      console.log("---------------------------------");
     }
 
-    const stakeAmount = Number.parseFloat(newTask.stakeAmount)
-    const currency = newTask.stakeCurrency
+    if (receipt && receipt.status === "success") {
+      console.log("✅ Transaction successful! Receipt:", receipt);
 
-    // Check if user has sufficient balance
-    if (userBalance[currency] < stakeAmount) {
-      alert(`Insufficient ${currency} balance. You have ${userBalance[currency]} ${currency}`)
-      return
+      // Now, let's find our event in the logs
+      for (const log of receipt.logs) {
+        try {
+          const decodedLog = decodeEventLog({
+            abi: taskStakingAbi,
+            eventName: "TaskCreated",
+            data: log.data,
+            topics: log.topics,
+          });
+
+          // We found it!
+          const taskId = decodedLog.args.taskId.toString();
+          console.log("✅ Smart Contract emitted TaskCreated event! Task ID:", taskId);
+          console.log("This is the point where you would call your backend API.");
+          
+          // Now we can update our UI state with the real data
+          const createdTask: Task = {
+            id: taskId, // Use the ID from the event!
+            title: newTask.title,
+            description: newTask.description,
+            category: newTask.category || "productivity",
+            deadline: new Date(newTask.deadline),
+            stakeAmount: parseFloat(newTask.stakeAmount),
+            stakeCurrency: "ETH", // We are only staking ETH for now
+            status: "active",
+            progress: 0,
+            createdAt: new Date(),
+            difficulty: newTask.difficulty,
+            tags: newTask.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+            userType: newTask.userType,
+          };
+      
+          setTasks((prev) => [createdTask, ...prev]);
+          setUserStats(prev => ({ ...prev, tasksActive: prev.tasksActive + 1 }));
+
+          // Reset the form and close the modal
+          setShowCreateTaskModal(false);
+          setNewTask({
+             title: "",
+             description: "",
+             category: "",
+             deadline: "",
+             stakeAmount: "",
+             stakeCurrency: "ZLAG",
+             difficulty: "medium",
+             tags: "",
+             userType: userStats.userType,
+           });
+
+          // Important: break the loop after we find our event
+          break; 
+        } catch (e) {
+          // This log wasn't the one we wanted, so we ignore it and continue the loop
+        }
+      }
+    } else if (receipt && receipt.status === "reverted") {
+      console.error("❌ Transaction failed or was reverted.");
+      alert("Transaction failed. Check the console for details.");
     }
+  }, [receipt]); // This whole block runs whenever `receipt` changes
 
-    // Simulate smart contract locking stake
-    console.log(`Smart contract locking ${stakeAmount} ${currency} for task: ${newTask.title}`)
-    
-    // Deduct stake from user balance
-    setUserBalance(prev => ({
-      ...prev,
-      [currency]: prev[currency] - stakeAmount
-    }))
+  //-------------------------------------USE EFFECT TO LISTEN ENDS HERE ----------------------------------------//
 
-    const task: Task = {
-      id: Date.now().toString(),
-      title: newTask.title,
-      description: newTask.description,
-      category: newTask.category || "productivity",
-      deadline: new Date(newTask.deadline),
-      stakeAmount: stakeAmount,
-      stakeCurrency: newTask.stakeCurrency,
-      status: "active",
-      progress: 0,
-      createdAt: new Date(),
-      difficulty: newTask.difficulty,
-      tags: newTask.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      userType: newTask.userType as "student" | "freelancer" | "productivity",
-    }
-
-    setTasks((prev) => [task, ...prev])
-    setUserStats(prev => ({ ...prev, tasksActive: prev.tasksActive + 1 }))
-    
-    setNewTask({
-      title: "",
-      description: "",
-      category: "",
-      deadline: "",
-      stakeAmount: "",
-      stakeCurrency: "ZLAG" as "ETH" | "USDC" | "ZLAG",
-      difficulty: "medium" as "easy" | "medium" | "hard",
-      tags: "",
-      userType: userStats.userType,
-    })
-    setShowCreateTaskModal(false)
-    
-    console.log(`Task created successfully. Stake of ${stakeAmount} ${currency} locked.`)
-  }
 
   const submitProof = () => {
     if (!selectedTask || !proofSubmission.content) return
@@ -950,6 +1086,8 @@ export default function ZeroLagDashboard() {
         return 0
     }
   })
+  //  console.log("RENDER > Current Tx Hash:", hash);
+  // console.log("RENDER > Current Receipt:", receipt);
 
   return (
     <div className="min-h-screen bg-dark-navy relative overflow-hidden font-sans text-retro-navy-text">
@@ -1050,7 +1188,7 @@ export default function ZeroLagDashboard() {
                 {/* Time Display */}
                 <div className="px-3 py-2 rounded-lg border-2 border-retro-border-dark bg-soft-beige text-retro-navy-text text-sm shadow-retro-soft-inset">
                   <span className="font-mono">
-                    {currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                     {isClient ? currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "--:--"}
                   </span>
                 </div>
 
@@ -2115,6 +2253,12 @@ export default function ZeroLagDashboard() {
                 <Lock className="w-4 h-4 mr-2" />
                 Stake & Create
               </RetroButton>
+              {/* ADD THIS BLOCK TO DISPLAY THE ERROR */}
+              {error && (
+                <div style={{ marginTop: '10px', color: 'red', border: '1px solid red', padding: '10px' }}>
+                 <p><strong>Error:</strong> {error.shortMessage || error.message}</p>
+                </div>
+               )}
             </div>
           </div>
         </DialogContent>
